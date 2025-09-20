@@ -126,6 +126,7 @@ private struct CNCursesWindow {
         try CNCursesCall.check(result: cncurses_cbreak(), name: "cbreak")
         try CNCursesCall.check(result: cncurses_noecho(), name: "noecho")
         try CNCursesCall.check(result: cncurses_keypad(rawPointer, true), name: "keypad")
+        try CNCursesCall.check(result: cncurses_nodelay(rawPointer, true), name: "nodelay")
         try CNCursesCall.check(result: cncurses_erase(), name: "erase")
         try CNCursesCall.check(result: cncurses_refresh(), name: "refresh")
     }

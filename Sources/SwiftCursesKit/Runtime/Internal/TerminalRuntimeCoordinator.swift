@@ -24,10 +24,16 @@ final class TerminalRuntimeCoordinator: @unchecked Sendable {
         let renderer = SceneRenderer()
 
         do {
-            while shouldContinueRunning() {
+            outerLoop: while shouldContinueRunning() {
                 try renderer.render(scene: application.body, on: screen)
                 if !shouldContinueRunning() {
                     break
+                }
+                while let keyEvent = pollKeyEvent(on: screen) {
+                    await application.onEvent(.key(keyEvent), context: context)
+                    if !shouldContinueRunning() {
+                        break outerLoop
+                    }
                 }
                 await application.onEvent(.tick, context: context)
                 if !shouldContinueRunning() {
@@ -50,6 +56,31 @@ final class TerminalRuntimeCoordinator: @unchecked Sendable {
         if let capturedError {
             throw capturedError
         }
+    }
+
+    private func pollKeyEvent(on screen: TerminalScreen) -> KeyEvent? {
+        guard let descriptor = screen.rootWindow.withDescriptor({ $0 }) else {
+            return nil
+        }
+        while true {
+            let code = CNCursesInputAPI.readCharacter(from: descriptor)
+            if code == CNCursesInputAPI.noInputCode {
+                return nil
+            }
+            if let event = translateKeyCode(code) {
+                return event
+            }
+        }
+    }
+
+    private func translateKeyCode(_ code: Int32) -> KeyEvent? {
+        guard code >= 0, code <= 0x7F else {
+            return nil
+        }
+        guard let scalar = UnicodeScalar(Int(code)) else {
+            return nil
+        }
+        return .character(Character(scalar))
     }
 
     func requestShutdown() {

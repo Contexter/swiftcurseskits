@@ -36,6 +36,10 @@ static inline int32_t cncurses_keypad(CNCursesWindowRef window, bool enable) {
     return (int32_t)keypad((WINDOW *)window, enable ? TRUE : FALSE);
 }
 
+static inline int32_t cncurses_nodelay(CNCursesWindowRef window, bool enable) {
+    return (int32_t)nodelay((WINDOW *)window, enable ? TRUE : FALSE);
+}
+
 static inline int32_t cncurses_refresh(void) {
     return (int32_t)refresh();
 }
@@ -61,6 +65,10 @@ static inline int32_t cncurses_mvwaddnstr(
     CNCursesWindowRef window, int32_t y, int32_t x, const char *text, int32_t length
 ) {
     return (int32_t)mvwaddnstr((WINDOW *)window, y, x, text, length);
+}
+
+static inline int32_t cncurses_wgetch(CNCursesWindowRef window) {
+    return (int32_t)wgetch((WINDOW *)window);
 }
 
 static inline int32_t cncurses_wnoutrefresh(CNCursesWindowRef window) {
