@@ -48,6 +48,41 @@ static inline int32_t cncurses_delwin(CNCursesWindowRef window) {
     return (int32_t)delwin((WINDOW *)window);
 }
 
+static inline CNCursesWindowRef cncurses_newwin(int32_t height, int32_t width, int32_t y, int32_t x) {
+    WINDOW *window = newwin(height, width, y, x);
+    return (CNCursesWindowRef)window;
+}
+
+static inline int32_t cncurses_wclear(CNCursesWindowRef window) {
+    return (int32_t)wclear((WINDOW *)window);
+}
+
+static inline int32_t cncurses_mvwaddnstr(
+    CNCursesWindowRef window, int32_t y, int32_t x, const char *text, int32_t length
+) {
+    return (int32_t)mvwaddnstr((WINDOW *)window, y, x, text, length);
+}
+
+static inline int32_t cncurses_wnoutrefresh(CNCursesWindowRef window) {
+    return (int32_t)wnoutrefresh((WINDOW *)window);
+}
+
+static inline int32_t cncurses_doupdate(void) {
+    return (int32_t)doupdate();
+}
+
+static inline void cncurses_getmaxyx(CNCursesWindowRef window, int32_t *rows, int32_t *columns) {
+    int y = 0;
+    int x = 0;
+    getmaxyx((WINDOW *)window, y, x);
+    if (rows != NULL) {
+        *rows = (int32_t)y;
+    }
+    if (columns != NULL) {
+        *columns = (int32_t)x;
+    }
+}
+
 static inline int32_t cncurses_ok(void) {
     return (int32_t)OK;
 }
