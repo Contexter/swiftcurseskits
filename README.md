@@ -125,8 +125,17 @@ Refer to `AGENTS.md` for detailed contribution standards.
 ```bash
 swift build
 swift test
-swift-format --in-place .
+swift-format --configuration .swift-format.json --in-place .
 swift run Examples/DashboardDemo
+```
+
+### Formatting
+
+The repository includes a shared `.swift-format.json` profile. Apply it before committing to
+keep whitespace and line wrapping consistent across all targets:
+
+```bash
+swift-format --configuration .swift-format.json --in-place .
 ```
 
 Before submitting a pull request:
