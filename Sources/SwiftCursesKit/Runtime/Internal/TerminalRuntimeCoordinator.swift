@@ -62,9 +62,10 @@ final class TerminalRuntimeCoordinator: @unchecked Sendable {
         guard let descriptor = screen.rootWindow.withDescriptor({ $0 }) else {
             return nil
         }
+        let environment = CNCursesBridge.environment
         while true {
-            let code = CNCursesInputAPI.readCharacter(from: descriptor)
-            if code == CNCursesInputAPI.noInputCode {
+            let code = environment.input.readCharacter(descriptor)
+            if code == environment.input.noInputCode() {
                 return nil
             }
             if let event = translateKeyCode(code) {
@@ -73,7 +74,7 @@ final class TerminalRuntimeCoordinator: @unchecked Sendable {
         }
     }
 
-    private func translateKeyCode(_ code: Int32) -> KeyEvent? {
+    fileprivate func translateKeyCode(_ code: Int32) -> KeyEvent? {
         guard code >= 0, code <= 0x7F else {
             return nil
         }
@@ -94,13 +95,14 @@ final class TerminalRuntimeCoordinator: @unchecked Sendable {
     private func start() throws -> WindowHandle {
         var detectedCapabilities = TerminalCapabilities.headless
         let handle = try lock.withLock {
+            let environment = CNCursesBridge.environment
             if isRunning {
                 throw TerminalRuntimeError.alreadyRunning
             }
             do {
-                _ = try CNCursesRuntime.bootstrap()
+                _ = try environment.runtime.bootstrap()
             } catch let error as CNCursesRuntimeError {
-                if case let .callFailed(name: name, code: code) = error {
+                if case .callFailed(name: let name, code: let code) = error {
                     throw TerminalRuntimeError.ncursesCallFailed(
                         function: name.runtimeFunctionName, code: code)
                 }
@@ -108,7 +110,7 @@ final class TerminalRuntimeCoordinator: @unchecked Sendable {
             } catch {
                 throw TerminalRuntimeError.bootstrapFailed
             }
-            if CNCursesRuntime.isHeadless {
+            if environment.runtime.isHeadless() {
                 let handle = WindowHandle(descriptor: nil, ownsLifecycle: false)
                 screenHandle = handle
                 shouldStop = false
@@ -119,9 +121,9 @@ final class TerminalRuntimeCoordinator: @unchecked Sendable {
             }
             let descriptor: CNCursesWindowDescriptor
             do {
-                descriptor = try CNCursesWindowAPI.standardScreen()
+                descriptor = try environment.window.standardScreen()
             } catch {
-                try? CNCursesRuntime.shutdown()
+                try? environment.runtime.shutdown()
                 throw TerminalRuntimeError.bootstrapFailed
             }
             let handle = WindowHandle(descriptor: descriptor, ownsLifecycle: false)
@@ -149,9 +151,10 @@ final class TerminalRuntimeCoordinator: @unchecked Sendable {
         }
         handle?.markClosed()
         do {
-            try CNCursesRuntime.shutdown()
+            let environment = CNCursesBridge.environment
+            try environment.runtime.shutdown()
         } catch let error as CNCursesRuntimeError {
-            if case let .callFailed(name: name, code: code) = error {
+            if case .callFailed(name: let name, code: let code) = error {
                 throw TerminalRuntimeError.ncursesCallFailed(
                     function: name.runtimeFunctionName, code: code)
             }
@@ -186,14 +189,21 @@ final class TerminalRuntimeCoordinator: @unchecked Sendable {
             guard capabilities.supportsMouse else { throw MouseCaptureError.unsupported }
         }
         do {
-            try CNCursesMouseAPI.setMouseMask(options.rawValue)
+            let environment = CNCursesBridge.environment
+            try environment.mouse.setMouseMask(options.rawValue)
         } catch let error as CNCursesRuntimeError {
-            if case let .callFailed(name: _, code: code) = error {
+            if case .callFailed(name: _, code: let code) = error {
                 throw MouseCaptureError.ncursesCallFailed(code: code)
             }
             throw MouseCaptureError.ncursesCallFailed(code: -1)
         } catch {
             throw MouseCaptureError.ncursesCallFailed(code: -1)
         }
+    }
+}
+
+extension TerminalRuntimeCoordinator {
+    func _testTranslateKeyCode(_ code: Int32) -> KeyEvent? {
+        translateKeyCode(code)
     }
 }

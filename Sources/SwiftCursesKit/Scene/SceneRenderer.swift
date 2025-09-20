@@ -9,7 +9,8 @@ public struct SceneRenderer: Sendable {
         guard let descriptor = screen.rootWindow.withDescriptor({ $0 }) else {
             return
         }
-        let size = CNCursesWindowAPI.size(of: descriptor)
+        let environment = CNCursesBridge.environment
+        let size = environment.window.size(descriptor)
         let rootSize = LayoutSize(width: max(0, size.columns), height: max(0, size.rows))
         let rootRect = LayoutRect(origin: .zero, size: rootSize)
 
@@ -18,7 +19,7 @@ public struct SceneRenderer: Sendable {
             layout(node: node, in: rootRect, buffer: &buffer)
         }
 
-        try CNCursesWindowAPI.clear(descriptor)
+        try environment.window.clear(descriptor)
         for command in buffer.commands {
             guard command.origin.x >= 0, command.origin.y >= 0 else { continue }
             guard command.origin.y < rootSize.height, command.origin.x < rootSize.width else {
@@ -28,11 +29,11 @@ public struct SceneRenderer: Sendable {
             guard availableWidth > 0 else { continue }
             let truncated = String(command.text.prefix(availableWidth))
             let padded = truncated.padding(toLength: availableWidth, withPad: " ", startingAt: 0)
-            try CNCursesWindowAPI.draw(
-                padded, descriptor: descriptor, y: command.origin.y, x: command.origin.x)
+            try environment.window.draw(
+                padded, descriptor, command.origin.y, command.origin.x)
         }
-        try CNCursesWindowAPI.stage(descriptor)
-        try CNCursesWindowAPI.commitStagedUpdates()
+        try environment.window.stage(descriptor)
+        try environment.window.commit()
     }
 }
 
@@ -53,11 +54,11 @@ private extension SceneRenderer {
             for child in node.children {
                 layout(node: child, in: innerRect, buffer: &buffer)
             }
-        case let .stack(axis, spacing):
+        case .stack(let axis, let spacing):
             layoutStack(axis: axis, spacing: spacing, node: node, in: innerRect, buffer: &buffer)
-        case let .split(configuration):
+        case .split(let configuration):
             layoutSplit(configuration: configuration, node: node, in: innerRect, buffer: &buffer)
-        case let .widget(widget):
+        case .widget(let widget):
             let constraints = LayoutConstraints(
                 maxWidth: innerSize.width, maxHeight: innerSize.height)
             let measured = clampSize(
@@ -207,7 +208,7 @@ private extension SceneRenderer {
                 height = max(height, childSize.height)
             }
             innerSize = LayoutSize(width: width, height: height)
-        case let .stack(axis, spacing):
+        case .stack(let axis, let spacing):
             switch axis {
             case .vertical:
                 var width = 0
@@ -234,7 +235,7 @@ private extension SceneRenderer {
                 }
                 innerSize = LayoutSize(width: width, height: height)
             }
-        case let .split(configuration):
+        case .split(let configuration):
             guard node.children.count >= 2 else {
                 let size =
                     node.children.first.map { measure(node: $0, constraints: insetConstraints) }
@@ -256,7 +257,7 @@ private extension SceneRenderer {
                     height: leadingSize.height + trailingSize.height
                 )
             }
-        case let .widget(widget):
+        case .widget(let widget):
             innerSize = widget.measure(in: insetConstraints)
         }
 

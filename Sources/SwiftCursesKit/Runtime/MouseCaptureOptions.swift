@@ -1,4 +1,3 @@
-import CNCursesSupport
 import Foundation
 
 /// Represents the set of mouse events that should be captured by ncurses.
@@ -12,10 +11,16 @@ public struct MouseCaptureOptions: OptionSet, Sendable {
     }
 
     /// Captures all mouse button events supported by ncurses.
-    public static let buttonEvents = MouseCaptureOptions(rawValue: CNCursesMouseAPI.allEventsMask())
+    public static var buttonEvents: MouseCaptureOptions {
+        let environment = CNCursesBridge.environment
+        return MouseCaptureOptions(rawValue: environment.mouse.allEventsMask())
+    }
 
     /// Enables reporting of mouse motion while buttons are pressed.
-    public static let motion = MouseCaptureOptions(rawValue: CNCursesMouseAPI.reportPositionMask())
+    public static var motion: MouseCaptureOptions {
+        let environment = CNCursesBridge.environment
+        return MouseCaptureOptions(rawValue: environment.mouse.reportPositionMask())
+    }
 
     /// Captures all available mouse events.
     public static let all: MouseCaptureOptions = [.buttonEvents, .motion]

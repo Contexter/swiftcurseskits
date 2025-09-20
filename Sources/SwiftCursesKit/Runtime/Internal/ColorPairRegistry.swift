@@ -53,21 +53,18 @@ final class ColorPairRegistry: @unchecked Sendable {
             return .allocate(identifier: identifier, capabilities: capabilities)
         }
 
+        let environment = CNCursesBridge.environment
         switch evaluation {
         case .defaultPair:
             return .default
-        case let .cached(pair):
+        case .cached(let pair):
             return pair
-        case let .allocate(identifier, capabilities):
+        case .allocate(let identifier, let capabilities):
             let components = configuration.resolvedComponents(for: capabilities)
             do {
-                try CNCursesColorAPI.initializePair(
-                    identifier: identifier,
-                    foreground: components.0,
-                    background: components.1
-                )
+                try environment.color.initializePair(identifier, components.0, components.1)
             } catch let error as CNCursesRuntimeError {
-                if case let .callFailed(name: _, code: code) = error {
+                if case .callFailed(name: _, code: let code) = error {
                     throw ColorPaletteError.ncursesCallFailed(code: code)
                 }
                 throw ColorPaletteError.ncursesCallFailed(code: -1)
