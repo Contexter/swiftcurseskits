@@ -27,15 +27,14 @@ let package = Package(
             dependencies: ["CNCursesSupportShims"],
             path: "Sources/CNCursesSupport/Swift",
             linkerSettings: [
-                .linkedLibrary("ncursesw")
+                .linkedLibrary("ncurses", .when(platforms: [.macOS])),
+                .linkedLibrary("ncursesw", .when(platforms: [.linux]))
             ]
         ),
         .systemLibrary(
             name: "CNCursesSupportShims",
             path: "Sources/CNCursesSupport/Shims",
-            pkgConfig: "ncursesw",
             providers: [
-                .brew(["ncurses"]),
                 .apt(["libncursesw5-dev"]),
             ]
         ),
