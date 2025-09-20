@@ -2,42 +2,43 @@ import Foundation
 
 /// Describes the entry point for an ncurses powered terminal experience.
 ///
-/// A ``TerminalApp`` encapsulates the high-level configuration of a SwiftCurses
-/// application including the initial banner shown during startup and the frame
-/// handler executed by the runtime coordinator. The handler is invoked for each
-/// pass of the main loop until it returns `false` or the app requests a
-/// shutdown through ``AppContext/requestShutdown()``.
-public struct TerminalApp {
-  /// Represents a single iteration of the application's main loop.
-  ///
-  /// Return `true` to keep processing future iterations or `false` to exit once
-  /// the current iteration completes.
-  public typealias FrameHandler = (_ context: AppContext) throws -> Bool
+/// A ``TerminalApp`` defines the declarative scene that should be rendered on
+/// every pass of the runtime loop and optionally reacts to incoming events.
+/// Conforming types declare their user interface through a ``SceneBuilder``
+/// composition and rely on ``SceneRenderer`` to translate the layout tree into
+/// ncurses draw commands.
+public protocol TerminalApp: Sendable {
+    /// The type of scene produced by the application.
+    associatedtype Body: Scene
 
-  /// The textual banner presented when the application launches.
-  public var banner: String
+    /// The textual banner presented when the application launches.
+    var banner: String { get }
 
-  /// The closure invoked on every iteration of the main loop.
-  public var frameHandler: FrameHandler
+    /// The root scene describing the application's interface.
+    @SceneBuilder var body: Body { get }
 
-  /// Creates a new terminal application descriptor.
-  /// - Parameters:
-  ///   - banner: The title that should be displayed when the app launches.
-  ///   - frameHandler: A closure executed for each pass of the main loop.
-  ///     Return `true` to continue running or `false` to finish execution.
-  public init(
-    banner: String = "SwiftCursesKit Demo", frameHandler: @escaping FrameHandler = { _ in false }
-  ) {
-    self.banner = banner
-    self.frameHandler = frameHandler
-  }
+    /// Invoked by the runtime when a new event is available.
+    ///
+    /// Conforming applications should update their state in response to the
+    /// provided ``Event`` and invoke ``AppContext.quit()`` when the app should
+    /// terminate.
+    mutating func onEvent(_ event: Event, context: AppContext) async
+}
 
-  /// Boots the terminal runtime and executes the main loop.
-  /// - Returns: The banner text that callers can display to a user.
-  /// - Throws: ``TerminalRuntimeError`` when the runtime cannot be started or shut down cleanly.
-  @discardableResult
-  public func run() throws -> String {
-    try TerminalRuntimeCoordinator.shared.run(app: self)
-    return banner
-  }
+public extension TerminalApp {
+    /// Provides a default banner for applications that do not specify one.
+    var banner: String { "SwiftCursesKit" }
+
+    /// Default no-op event handler.
+    mutating func onEvent(_ event: Event, context: AppContext) async {}
+
+    /// Boots the terminal runtime and executes the main loop.
+    /// - Returns: The banner text that callers can display to a user.
+    /// - Throws: ``TerminalRuntimeError`` when the runtime cannot be started or
+    ///   shut down cleanly.
+    @discardableResult
+    func run() async throws -> String {
+        try await TerminalRuntimeCoordinator.shared.run(app: self)
+        return banner
+    }
 }
