@@ -1,4 +1,4 @@
-@_implementationOnly import CNCursesSupportShims
+import CNCursesSupportShims
 import Foundation
 
 package enum CNCursesColorAPI {

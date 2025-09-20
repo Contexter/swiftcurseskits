@@ -1,4 +1,4 @@
-@_implementationOnly import CNCursesSupportShims
+import CNCursesSupportShims
 
 package enum CNCursesInputAPI {
     package static func readCharacter(from descriptor: CNCursesWindowDescriptor) -> Int32 {
