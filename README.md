@@ -2,7 +2,6 @@
 
 SwiftCursesKit is a Swift-native wrapper around **ncurses** that lets you build rich, windowed dashboards directly in the terminal. It combines ncurses’ battle-tested capabilities (cursor control, colors, mouse input, panels) with ergonomic Swift APIs, async event loops, and declarative layout primitives.
 
-https://github.com/your-org/swiftcurseskits (replace with the final repository URL)
 
 ---
 
