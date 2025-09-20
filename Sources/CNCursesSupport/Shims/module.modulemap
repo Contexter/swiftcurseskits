@@ -1,0 +1,5 @@
+module CNCursesSupportShims [system] {
+    header "include/CNCursesSupportShims.h"
+    link "ncursesw"
+    export *
+}

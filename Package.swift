@@ -24,7 +24,20 @@ let package = Package(
         ),
         .target(
             name: "CNCursesSupport",
-            path: "Sources/CNCursesSupport"
+            dependencies: ["CNCursesSupportShims"],
+            path: "Sources/CNCursesSupport/Swift",
+            linkerSettings: [
+                .linkedLibrary("ncursesw")
+            ]
+        ),
+        .systemLibrary(
+            name: "CNCursesSupportShims",
+            path: "Sources/CNCursesSupport/Shims",
+            pkgConfig: "ncursesw",
+            providers: [
+                .brew(["ncurses"]),
+                .apt(["libncursesw5-dev"]),
+            ]
         ),
         .executableTarget(
             name: "DashboardDemo",
