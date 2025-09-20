@@ -1,0 +1,266 @@
+{
+  "request_id": "demo-r1",
+  "status": "ok",
+  "components": [
+    {
+      "id": "heading",
+      "type": "Heading",
+      "x": 2,
+      "y": 1,
+      "width": 116,
+      "height": 1,
+      "props": {
+        "text": "baseline awareness \u00b7 live sync active \u00b7 MIDI profile: list.scroll",
+        "style": {
+          "bold": true,
+          "color_pair": 2
+        }
+      }
+    },
+    {
+      "id": "overview",
+      "type": "Card",
+      "x": 2,
+      "y": 3,
+      "width": 38,
+      "height": 7,
+      "props": {
+        "title": "Overview",
+        "items": [
+          {
+            "label": "status",
+            "value": "active"
+          },
+          {
+            "label": "coverage",
+            "value": "92%"
+          },
+          {
+            "label": "drift",
+            "value": "low"
+          }
+        ]
+      }
+    },
+    {
+      "id": "timeline",
+      "type": "Timeline",
+      "x": 2,
+      "y": 12,
+      "width": 38,
+      "height": 7,
+      "props": {
+        "events": [
+          {
+            "ts": "12:14",
+            "text": "release v0.12 \u2014 drift streamed"
+          },
+          {
+            "ts": "09:02",
+            "text": "corpus readiness endpoint"
+          },
+          {
+            "ts": "yesterday",
+            "text": "narrative patterns promoted"
+          }
+        ]
+      }
+    },
+    {
+      "id": "workbench",
+      "type": "List",
+      "x": 2,
+      "y": 21,
+      "width": 38,
+      "height": 6,
+      "props": {
+        "items": [
+          {
+            "text": "Draft",
+            "selected": true
+          },
+          {
+            "text": "Board"
+          },
+          {
+            "text": "Monitor"
+          }
+        ]
+      }
+    },
+    {
+      "id": "draft",
+      "type": "Card",
+      "x": 42,
+      "y": 3,
+      "width": 40,
+      "height": 20,
+      "props": {
+        "title": "Draft (Fountain)",
+        "items": [
+          {
+            "text": "EXT. ROOFTOP \u2013 NIGHT"
+          },
+          {
+            "text": "A thin winter moon. Wind scrapes the glass edge."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "LIYA"
+          },
+          {
+            "text": "I'm not afraid of the height."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "ARI (O.S.)"
+          },
+          {
+            "text": "You always say that."
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "CUT TO:"
+          },
+          {
+            "text": ""
+          },
+          {
+            "text": "INT. KITCHEN \u2013 MORNING"
+          },
+          {
+            "text": "A kettle hisses; sunlight pools on the table."
+          }
+        ]
+      }
+    },
+    {
+      "id": "inspector",
+      "type": "Inspector",
+      "x": 84,
+      "y": 3,
+      "width": 34,
+      "height": 22,
+      "props": {
+        "title": "Inspector",
+        "items": [
+          {
+            "label": "repo",
+            "value": "fountain-coach/baseline-awareness"
+          },
+          {
+            "label": "branch",
+            "value": "main"
+          },
+          {
+            "label": "scene",
+            "value": "3 \u00b7 INT. TRAIN \u2013 MOVING"
+          },
+          {
+            "label": "time",
+            "value": "Day"
+          },
+          {
+            "label": "characters",
+            "value": "Liya, Ari (voice)"
+          },
+          {
+            "label": "beats",
+            "value": "5"
+          },
+          {
+            "label": "est. length",
+            "value": "1m 15s"
+          },
+          {
+            "label": "actions",
+            "value": "\u21b5 outline \u00b7 m marker \u00b7 n note"
+          }
+        ]
+      }
+    },
+    {
+      "id": "midi",
+      "type": "List",
+      "x": 2,
+      "y": 28,
+      "width": 80,
+      "height": 4,
+      "props": {
+        "items": [
+          {
+            "text": "IN: CC20  \u2192 list.scroll",
+            "meta": "MIDI Monitor"
+          },
+          {
+            "text": "IN: Note60 \u2192 palette.open"
+          },
+          {
+            "text": "IN: PBend  \u2192 timeline.scrub"
+          }
+        ]
+      }
+    },
+    {
+      "id": "commands",
+      "type": "List",
+      "x": 2,
+      "y": 34,
+      "width": 80,
+      "height": 6,
+      "props": {
+        "items": [
+          {
+            "text": "\u2318K palette",
+            "meta": "Command hints"
+          },
+          {
+            "text": "/ search"
+          },
+          {
+            "text": "i inspector"
+          },
+          {
+            "text": "? help"
+          },
+          {
+            "text": "b back"
+          },
+          {
+            "text": "q quit"
+          }
+        ]
+      }
+    },
+    {
+      "id": "divider",
+      "type": "Rule",
+      "x": 2,
+      "y": 40,
+      "width": 116,
+      "height": 1
+    },
+    {
+      "id": "status",
+      "type": "List",
+      "x": 2,
+      "y": 42,
+      "width": 116,
+      "height": 3,
+      "props": {
+        "items": [
+          {
+            "text": "\u2318S save   \u2318E export   \u2318K palette    140\u00d748 | Line 124, Col 7 | UTF-8 | Monochrome OK"
+          }
+        ]
+      }
+    }
+  ],
+  "explanation": "Left column anchors overview/timeline/workbench; center draft pairs with inspector rail and bottom monitors."
+}
