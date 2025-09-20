@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+
 #if defined(__APPLE__)
 #    if __has_include(<ncurses.h>)
 #        include <ncurses.h>
@@ -21,6 +22,7 @@
 #    else
 #        error "Unable to locate an ncurses header. SwiftCursesKit requires ncurses with wide-character support."
 #    endif
+
 #endif
 
 #ifdef __cplusplus
