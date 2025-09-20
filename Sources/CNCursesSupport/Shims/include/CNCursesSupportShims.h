@@ -5,6 +5,9 @@
 #include <stdint.h>
 
 #if defined(__APPLE__)
+#    include <locale.h>
+#    include <stdlib.h>
+#    include <unistd.h>
 #    if __has_include(<ncurses.h>)
 #        include <ncurses.h>
 #    elif __has_include(<ncursesw/curses.h>)
@@ -202,6 +205,24 @@ static inline int32_t cncurses_error(void) {
 static inline bool cncurses_is_endwin(void) {
     return isendwin() ? true : false;
 }
+
+#if defined(__APPLE__)
+static inline int32_t cncurses_lc_all(void) {
+    return (int32_t)LC_ALL;
+}
+
+static inline const char *cncurses_setlocale(int category, const char *locale) {
+    return setlocale(category, locale);
+}
+
+static inline bool cncurses_isatty(int fileDescriptor) {
+    return isatty(fileDescriptor) ? true : false;
+}
+
+static inline int32_t cncurses_register_exit_hook(void (*handler)(void)) {
+    return (int32_t)atexit(handler);
+}
+#endif
 
 #ifdef __cplusplus
 }
