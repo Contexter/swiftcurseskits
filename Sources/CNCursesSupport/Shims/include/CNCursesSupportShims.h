@@ -8,10 +8,12 @@
 #    include <locale.h>
 #    include <stdlib.h>
 #    include <unistd.h>
-#    if __has_include(<ncurses.h>)
-#        include <ncurses.h>
-#    elif __has_include(<ncursesw/curses.h>)
+#    if __has_include(<ncursesw/curses.h>)
 #        include <ncursesw/curses.h>
+#    elif __has_include(<ncurses.h>)
+#        include <ncurses.h>
+#    elif __has_include(<ncurses/curses.h>)
+#        include <ncurses/curses.h>
 #    else
 #        error "Unable to locate Homebrew ncurses headers. Install ncurses with wide-character support (brew install ncurses)."
 #    endif
