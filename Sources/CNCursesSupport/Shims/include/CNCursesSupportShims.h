@@ -5,10 +5,12 @@
 #include <stdint.h>
 #if __has_include(<ncursesw/curses.h>)
 #    include <ncursesw/curses.h>
-#elif __has_include(<curses.h>)
-#    include <curses.h>
+#elif __has_include(<ncurses/curses.h>)
+#    include <ncurses/curses.h>
+#elif __has_include(<ncurses.h>)
+#    include <ncurses.h>
 #else
-#    error "Unable to locate an ncurses header."
+#    error "Unable to locate an ncurses header. SwiftCursesKit requires ncurses with wide-character support."
 #endif
 
 #ifdef __cplusplus
