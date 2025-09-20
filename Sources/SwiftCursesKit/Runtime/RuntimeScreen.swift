@@ -10,4 +10,7 @@ public struct TerminalScreen: Sendable {
 
     /// The ncurses standard screen window.
     public var rootWindow: Window { rootWindowReference }
+
+    /// The terminal size reported for the root window, if available.
+    public var size: TerminalSize? { rootWindowReference.size }
 }

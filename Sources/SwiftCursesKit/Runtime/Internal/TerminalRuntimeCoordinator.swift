@@ -10,6 +10,8 @@ final class TerminalRuntimeCoordinator: @unchecked Sendable {
     private var isRunning = false
     private var shouldStop = false
     private var screenHandle: WindowHandle?
+    private var capabilitiesValue = TerminalCapabilities.headless
+    private let colorRegistry = ColorPairRegistry()
 
     private init() {}
 
@@ -59,7 +61,8 @@ final class TerminalRuntimeCoordinator: @unchecked Sendable {
     }
 
     private func start() throws -> WindowHandle {
-        try lock.withLock {
+        var detectedCapabilities = TerminalCapabilities.headless
+        let handle = try lock.withLock {
             if isRunning {
                 throw TerminalRuntimeError.alreadyRunning
             }
@@ -79,6 +82,8 @@ final class TerminalRuntimeCoordinator: @unchecked Sendable {
                 screenHandle = handle
                 shouldStop = false
                 isRunning = true
+                capabilitiesValue = .headless
+                detectedCapabilities = .headless
                 return handle
             }
             let descriptor: CNCursesWindowDescriptor
@@ -92,8 +97,13 @@ final class TerminalRuntimeCoordinator: @unchecked Sendable {
             screenHandle = handle
             shouldStop = false
             isRunning = true
+            let capabilities = TerminalCapabilitiesInspector.inspect()
+            capabilitiesValue = capabilities
+            detectedCapabilities = capabilities
             return handle
         }
+        colorRegistry.updateCapabilities(detectedCapabilities)
+        return handle
     }
 
     private func stop() throws {
@@ -102,6 +112,7 @@ final class TerminalRuntimeCoordinator: @unchecked Sendable {
                 screenHandle = nil
                 shouldStop = false
                 isRunning = false
+                capabilitiesValue = .headless
             }
             return screenHandle
         }
@@ -116,6 +127,42 @@ final class TerminalRuntimeCoordinator: @unchecked Sendable {
             throw TerminalRuntimeError.bootstrapFailed
         } catch {
             throw TerminalRuntimeError.bootstrapFailed
+        }
+        colorRegistry.reset()
+    }
+
+    func capabilitiesSnapshot() -> TerminalCapabilities {
+        lock.withLock { capabilitiesValue }
+    }
+
+    var palette: ColorPalette { ColorPalette(runtime: self) }
+
+    func colorPair(for configuration: ColorPairConfiguration) throws -> ColorPair {
+        try colorRegistry.pair(for: configuration)
+    }
+
+    func setMouseCapture(options: MouseCaptureOptions) throws {
+        let state = lock.withLock { () -> (active: Bool, capabilities: TerminalCapabilities) in
+            (isRunning, capabilitiesValue)
+        }
+        guard state.active else {
+            throw MouseCaptureError.runtimeInactive
+        }
+        let capabilities = state.capabilities
+        if options.isEmpty {
+            guard capabilities.supportsMouse else { return }
+        } else {
+            guard capabilities.supportsMouse else { throw MouseCaptureError.unsupported }
+        }
+        do {
+            try CNCursesMouseAPI.setMouseMask(options.rawValue)
+        } catch let error as CNCursesRuntimeError {
+            if case let .callFailed(name: _, code: code) = error {
+                throw MouseCaptureError.ncursesCallFailed(code: code)
+            }
+            throw MouseCaptureError.ncursesCallFailed(code: -1)
+        } catch {
+            throw MouseCaptureError.ncursesCallFailed(code: -1)
         }
     }
 }

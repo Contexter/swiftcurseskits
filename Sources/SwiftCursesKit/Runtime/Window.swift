@@ -23,6 +23,14 @@ public final class Window: @unchecked Sendable {
     /// Indicates whether the underlying ncurses window has been closed.
     public var isClosed: Bool { handle.isClosed }
 
+    /// The current terminal dimensions reported by ncurses for this window.
+    public var size: TerminalSize? {
+        handle.withDescriptor { descriptor in
+            let size = CNCursesWindowAPI.size(of: descriptor)
+            return TerminalSize(rows: size.rows, columns: size.columns)
+        }
+    }
+
     /// Closes the underlying ncurses window.
     /// - Throws: ``TerminalRuntimeError`` if ncurses reports a failure while closing the window.
     public func close() throws {
