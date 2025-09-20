@@ -71,6 +71,86 @@ static inline int32_t cncurses_doupdate(void) {
     return (int32_t)doupdate();
 }
 
+static inline bool cncurses_has_colors(void) {
+    return has_colors() ? true : false;
+}
+
+static inline int32_t cncurses_start_color(void) {
+    return (int32_t)start_color();
+}
+
+static inline int32_t cncurses_use_default_colors(void) {
+    return (int32_t)use_default_colors();
+}
+
+static inline int32_t cncurses_init_pair(int16_t pair, int16_t foreground, int16_t background) {
+    return (int32_t)init_pair(pair, foreground, background);
+}
+
+static inline int32_t cncurses_color_pair_count(void) {
+    return (int32_t)COLOR_PAIRS;
+}
+
+static inline int32_t cncurses_color_count(void) {
+    return (int32_t)COLORS;
+}
+
+static inline bool cncurses_can_change_color(void) {
+    return can_change_color() ? true : false;
+}
+
+static inline int16_t cncurses_color_black(void) {
+    return (int16_t)COLOR_BLACK;
+}
+
+static inline int16_t cncurses_color_red(void) {
+    return (int16_t)COLOR_RED;
+}
+
+static inline int16_t cncurses_color_green(void) {
+    return (int16_t)COLOR_GREEN;
+}
+
+static inline int16_t cncurses_color_yellow(void) {
+    return (int16_t)COLOR_YELLOW;
+}
+
+static inline int16_t cncurses_color_blue(void) {
+    return (int16_t)COLOR_BLUE;
+}
+
+static inline int16_t cncurses_color_magenta(void) {
+    return (int16_t)COLOR_MAGENTA;
+}
+
+static inline int16_t cncurses_color_cyan(void) {
+    return (int16_t)COLOR_CYAN;
+}
+
+static inline int16_t cncurses_color_white(void) {
+    return (int16_t)COLOR_WHITE;
+}
+
+static inline bool cncurses_has_mouse(void) {
+    return has_mouse() ? true : false;
+}
+
+static inline unsigned long cncurses_all_mouse_events(void) {
+    return (unsigned long)ALL_MOUSE_EVENTS;
+}
+
+static inline unsigned long cncurses_report_mouse_position(void) {
+    return (unsigned long)REPORT_MOUSE_POSITION;
+}
+
+static inline int32_t cncurses_set_mousemask(unsigned long mask) {
+    mmask_t previous = mousemask((mmask_t)mask, NULL);
+    if (previous == (mmask_t)ERR) {
+        return (int32_t)ERR;
+    }
+    return (int32_t)OK;
+}
+
 static inline void cncurses_getmaxyx(CNCursesWindowRef window, int32_t *rows, int32_t *columns) {
     int y = 0;
     int x = 0;
