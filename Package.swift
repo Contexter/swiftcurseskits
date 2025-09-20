@@ -46,7 +46,10 @@ let package = Package(
         ),
         .testTarget(
             name: "SwiftCursesKitTests",
-            dependencies: ["SwiftCursesKit"],
+            dependencies: [
+                "SwiftCursesKit",
+                "DashboardDemo",
+            ],
             path: "Tests/SwiftCursesKitTests"
         ),
     ]

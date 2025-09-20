@@ -97,7 +97,37 @@ struct DemoDashboard: TerminalApp {
 Run the demo:
 
 ```bash
-swift run DemoDashboard
+swift run DashboardDemo
+```
+
+Pass `--help` to see the available options, such as `--ticks` to control how
+many update cycles run before the app exits and `--preview` to print an ASCII
+snapshot after a headless run.
+
+### Dashboard Demo Preview
+
+Generate a snapshot without attaching to a terminal to quickly verify the
+layout:
+
+```bash
+swift run DashboardDemo --ticks 8 --log-lines 5 --preview
+```
+
+```
+                      SwiftCursesKit Demo
+================================
+CPU                               Memory
+[#######                     ]    [#######                     ]
+25%                               24%
+
+Logs:
+Tick 4: Sampling sensors…
+Tick 5: CPU load steady at 73%
+Tick 6: Memory pressure at 40%
+Tick 7: Tick 7 processed
+Tick 8: Sampling sensors…
+
+q: quit   Ticks: 8
 ```
 
 ---
@@ -126,7 +156,7 @@ Refer to `AGENTS.md` for detailed contribution standards.
 swift build
 swift test
 swift-format --configuration .swift-format.json --in-place .
-swift run Examples/DashboardDemo
+swift run DashboardDemo --preview
 ```
 
 ### Formatting
