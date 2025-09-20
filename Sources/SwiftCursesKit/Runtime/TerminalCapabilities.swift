@@ -61,7 +61,8 @@ public struct TerminalCapabilities: Sendable, Equatable {
 
 enum TerminalCapabilitiesInspector {
     static func inspect() -> TerminalCapabilities {
-        guard CNCursesRuntime.isHeadless == false else {
+        let environment = CNCursesBridge.environment
+        guard environment.runtime.isHeadless() == false else {
             return .headless
         }
 
@@ -71,14 +72,14 @@ enum TerminalCapabilitiesInspector {
         var supportsDefaultColors = false
         var supportsDynamicColorChanges = false
 
-        if CNCursesColorAPI.hasColorSupport {
+        if environment.color.hasColorSupport() {
             do {
-                try CNCursesColorAPI.startColor()
+                try environment.color.startColor()
                 supportsColor = true
-                colorCount = max(CNCursesColorAPI.colorCount(), 0)
-                colorPairCount = max(CNCursesColorAPI.colorPairCount(), 0)
-                supportsDefaultColors = CNCursesColorAPI.enableDefaultColors()
-                supportsDynamicColorChanges = CNCursesColorAPI.canChangeColor()
+                colorCount = max(environment.color.colorCount(), 0)
+                colorPairCount = max(environment.color.colorPairCount(), 0)
+                supportsDefaultColors = environment.color.enableDefaultColors()
+                supportsDynamicColorChanges = environment.color.canChangeColor()
             } catch {
                 supportsColor = false
                 colorCount = 0
@@ -88,7 +89,7 @@ enum TerminalCapabilitiesInspector {
             }
         }
 
-        let supportsMouse = CNCursesMouseAPI.hasMouseSupport && !CNCursesRuntime.isHeadless
+        let supportsMouse = environment.mouse.hasMouseSupport() && !environment.runtime.isHeadless()
 
         return TerminalCapabilities(
             isHeadless: false,

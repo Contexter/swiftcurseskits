@@ -26,7 +26,8 @@ public final class Window: @unchecked Sendable {
     /// The current terminal dimensions reported by ncurses for this window.
     public var size: TerminalSize? {
         handle.withDescriptor { descriptor in
-            let size = CNCursesWindowAPI.size(of: descriptor)
+            let environment = CNCursesBridge.environment
+            let size = environment.window.size(descriptor)
             return TerminalSize(rows: size.rows, columns: size.columns)
         }
     }

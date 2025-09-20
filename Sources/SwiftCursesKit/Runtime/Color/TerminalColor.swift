@@ -20,42 +20,50 @@ public struct TerminalColor: Sendable, Hashable {
 
     /// The standard ncurses black color.
     public static var black: TerminalColor {
-        TerminalColor(rawValue: CNCursesColorAPI.blackIdentifier())
+        let environment = CNCursesBridge.environment
+        return TerminalColor(rawValue: environment.color.blackIdentifier())
     }
 
     /// The standard ncurses red color.
     public static var red: TerminalColor {
-        TerminalColor(rawValue: CNCursesColorAPI.redIdentifier())
+        let environment = CNCursesBridge.environment
+        return TerminalColor(rawValue: environment.color.redIdentifier())
     }
 
     /// The standard ncurses green color.
     public static var green: TerminalColor {
-        TerminalColor(rawValue: CNCursesColorAPI.greenIdentifier())
+        let environment = CNCursesBridge.environment
+        return TerminalColor(rawValue: environment.color.greenIdentifier())
     }
 
     /// The standard ncurses yellow color.
     public static var yellow: TerminalColor {
-        TerminalColor(rawValue: CNCursesColorAPI.yellowIdentifier())
+        let environment = CNCursesBridge.environment
+        return TerminalColor(rawValue: environment.color.yellowIdentifier())
     }
 
     /// The standard ncurses blue color.
     public static var blue: TerminalColor {
-        TerminalColor(rawValue: CNCursesColorAPI.blueIdentifier())
+        let environment = CNCursesBridge.environment
+        return TerminalColor(rawValue: environment.color.blueIdentifier())
     }
 
     /// The standard ncurses magenta color.
     public static var magenta: TerminalColor {
-        TerminalColor(rawValue: CNCursesColorAPI.magentaIdentifier())
+        let environment = CNCursesBridge.environment
+        return TerminalColor(rawValue: environment.color.magentaIdentifier())
     }
 
     /// The standard ncurses cyan color.
     public static var cyan: TerminalColor {
-        TerminalColor(rawValue: CNCursesColorAPI.cyanIdentifier())
+        let environment = CNCursesBridge.environment
+        return TerminalColor(rawValue: environment.color.cyanIdentifier())
     }
 
     /// The standard ncurses white color.
     public static var white: TerminalColor {
-        TerminalColor(rawValue: CNCursesColorAPI.whiteIdentifier())
+        let environment = CNCursesBridge.environment
+        return TerminalColor(rawValue: environment.color.whiteIdentifier())
     }
 
     /// Validates whether the color value is within the specified capability bounds.

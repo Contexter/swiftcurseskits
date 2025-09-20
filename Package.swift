@@ -48,6 +48,7 @@ let package = Package(
             name: "SwiftCursesKitTests",
             dependencies: [
                 "SwiftCursesKit",
+                "CNCursesSupport",
                 "DashboardDemo",
             ],
             path: "Tests/SwiftCursesKitTests"

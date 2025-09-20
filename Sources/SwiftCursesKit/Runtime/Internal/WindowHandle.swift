@@ -22,9 +22,10 @@ final class WindowHandle: @unchecked Sendable {
             guard !closed else { return }
             if ownsLifecycle, let descriptor {
                 do {
-                    try CNCursesWindowAPI.destroyWindow(descriptor)
+                    let environment = CNCursesBridge.environment
+                    try environment.window.destroyWindow(descriptor)
                 } catch let error as CNCursesRuntimeError {
-                    if case let .callFailed(name: name, code: code) = error {
+                    if case .callFailed(name: let name, code: let code) = error {
                         throw TerminalRuntimeError.ncursesCallFailed(
                             function: name.runtimeFunctionName, code: code)
                     }

@@ -2,6 +2,22 @@ import XCTest
 @testable import SwiftCursesKit
 
 final class TerminalAppTests: XCTestCase {
+    private var environmentDouble: TestCNCursesEnvironment!
+
+    override func setUp() {
+        super.setUp()
+        environmentDouble = TestCNCursesEnvironment()
+        environmentDouble.runtimeIsHeadless = true
+        environmentDouble.noInputCode = -1
+        CNCursesBridge.environment = environmentDouble.makeEnvironment()
+    }
+
+    override func tearDown() {
+        CNCursesBridge.environment = .live
+        environmentDouble = nil
+        super.tearDown()
+    }
+
     func testRunReturnsBanner() async throws {
         let app = StaticTerminalApp()
         let output = try await app.run()
