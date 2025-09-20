@@ -3,7 +3,13 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <ncursesw/curses.h>
+#if __has_include(<ncursesw/curses.h>)
+#    include <ncursesw/curses.h>
+#elif __has_include(<curses.h>)
+#    include <curses.h>
+#else
+#    error "Unable to locate an ncurses header."
+#endif
 
 #ifdef __cplusplus
 extern "C" {
