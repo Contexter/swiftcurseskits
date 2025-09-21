@@ -24,7 +24,7 @@ All notable changes to SwiftCursesKit will be documented in this file. The forma
 - _Example_: Deprecate legacy color pairing APIs in favor of `ColorPalette` helpers.
 
 ### Documentation
-- _Example_: Expand Dashboard tutorial with mouse event walkthrough.
+- Document the Homebrew configuration required for macOS builds now that the shims prioritize vendored wide-character headers.
 
 ---
 

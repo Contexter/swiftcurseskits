@@ -36,7 +36,7 @@ SwiftCursesKit targets Swift 6.1+ with wide-character ncurses (`ncursesw`). Test
 | --- | --- | --- | --- |
 | Ubuntu 22.04 | 6.1 | `libncursesw5-dev` | Requires UTF-8 locale, e.g. `LANG=en_US.UTF-8`. |
 | Debian 12 | 6.1 | `libncursesw6-dev` | Ensure `/usr/lib` contains wide-character libraries. |
-| macOS 13+ | 6.1 (Xcode 15 toolchain) | `brew install ncurses` | Export `PKG_CONFIG_PATH=/opt/homebrew/opt/ncurses/lib/pkgconfig`. |
+| macOS 13+ | 6.1 (Xcode 15 toolchain) | `brew install ncurses` | Ensure Homebrew's pkg-config metadata is visible (`export PKG_CONFIG_PATH="$(brew --prefix)/opt/ncurses/lib/pkgconfig"`) so the build uses the vendored wide-character headers. |
 
 > **Terminal emulators:** 256-color support is auto-detected; fallback rendering reduces gradients when limited colors are available.
 
@@ -47,7 +47,7 @@ SwiftCursesKit targets Swift 6.1+ with wide-character ncurses (`ncursesw`). Test
 ### Prerequisites
 
 - Swift 6.1 or newer
-- `ncurses` development headers installed (`sudo apt install libncursesw5-dev` on Debian/Ubuntu, `brew install ncurses` on macOS)
+- `ncurses` development headers installed (`sudo apt install libncursesw5-dev` on Debian/Ubuntu, `brew install ncurses` on macOS). On Apple hosts also expose Homebrew's include path to the compiler by exporting `PKG_CONFIG_PATH="$(brew --prefix)/opt/ncurses/lib/pkgconfig"` before running SwiftPM commands.
 
 ### Add the package dependency
 
@@ -182,7 +182,7 @@ Before submitting patches:
 
 | Symptom | Suggested Fix |
 | --- | --- |
-| `pkg-config` cannot find ncurses | Ensure `pkg-config --libs ncursesw` succeeds. On macOS set `PKG_CONFIG_PATH=/opt/homebrew/opt/ncurses/lib/pkgconfig`. |
+| `pkg-config` cannot find ncurses | Ensure `pkg-config --libs ncursesw` succeeds. On macOS export `PKG_CONFIG_PATH="$(brew --prefix)/opt/ncurses/lib/pkgconfig"` so SwiftPM resolves the Homebrew-provided wide-character headers and libraries. |
 | Garbled characters or missing borders | Confirm the terminal is running in UTF-8 and that wide-character ncurses (`ncursesw`) is installed. |
 | Mouse input ignored | Some terminals (e.g., tmux panes without `set -g mouse on`) suppress mouse events. Toggle mouse support or handle `.mouseUnavailable` capability. |
 | Snapshot rendering differs from live view | Preview mode limits color depth to avoid escape codes. Launch the example app interactively to confirm gradients and animations. |
