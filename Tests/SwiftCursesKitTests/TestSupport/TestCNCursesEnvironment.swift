@@ -31,6 +31,7 @@ final class TestCNCursesEnvironment: @unchecked Sendable {
     var colorPairCountValue = 0
     var colorEnableDefaultColors = false
     var colorCanChange = false
+    var colorInitializeError: Error?
     private(set) var initializedPairs: [(Int16, Int16, Int16)] = []
 
     var mouseHasSupport = false
@@ -144,6 +145,9 @@ final class TestCNCursesEnvironment: @unchecked Sendable {
                     self?.colorCanChange ?? false
                 },
                 initializePair: { [weak self] identifier, foreground, background in
+                    if let error = self?.colorInitializeError {
+                        throw error
+                    }
                     self?.initializedPairs.append((identifier, foreground, background))
                 },
                 blackIdentifier: { 0 },

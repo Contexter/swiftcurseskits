@@ -6,7 +6,7 @@ final class ColorPairRegistry: @unchecked Sendable {
     private enum Evaluation {
         case defaultPair
         case cached(ColorPair)
-        case allocate(identifier: Int16, capabilities: TerminalCapabilities)
+        case allocate(pair: ColorPair, configuration: ColorPairConfiguration, capabilities: TerminalCapabilities)
         case capacityExceeded
     }
 
@@ -49,8 +49,7 @@ final class ColorPairRegistry: @unchecked Sendable {
             let identifier = nextIdentifier
             nextIdentifier += 1
             let pair = ColorPair(rawValue: identifier)
-            cache[configuration] = pair
-            return .allocate(identifier: identifier, capabilities: capabilities)
+            return .allocate(pair: pair, configuration: configuration, capabilities: capabilities)
         }
 
         let environment = CNCursesBridge.environment
@@ -59,19 +58,38 @@ final class ColorPairRegistry: @unchecked Sendable {
             return .default
         case .cached(let pair):
             return pair
-        case .allocate(let identifier, let capabilities):
+        case .allocate(pair: let pair, configuration: let configuration, capabilities: let capabilities):
             let components = configuration.resolvedComponents(for: capabilities)
             do {
-                try environment.color.initializePair(identifier, components.0, components.1)
+                try environment.color.initializePair(pair.rawValue, components.0, components.1)
+                lock.withLock {
+                    cache[configuration] = pair
+                }
             } catch let error as CNCursesRuntimeError {
+                lock.withLock {
+                    if cache[configuration] == pair {
+                        cache.removeValue(forKey: configuration)
+                    }
+                    if nextIdentifier == pair.rawValue + 1 {
+                        nextIdentifier -= 1
+                    }
+                }
                 if case .callFailed(name: _, code: let code) = error {
                     throw ColorPaletteError.ncursesCallFailed(code: code)
                 }
                 throw ColorPaletteError.ncursesCallFailed(code: -1)
             } catch {
+                lock.withLock {
+                    if cache[configuration] == pair {
+                        cache.removeValue(forKey: configuration)
+                    }
+                    if nextIdentifier == pair.rawValue + 1 {
+                        nextIdentifier -= 1
+                    }
+                }
                 throw ColorPaletteError.ncursesCallFailed(code: -1)
             }
-            return ColorPair(rawValue: identifier)
+            return pair
         case .capacityExceeded:
             throw ColorPaletteError.capacityExceeded
         }
