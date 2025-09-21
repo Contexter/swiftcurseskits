@@ -273,24 +273,18 @@ private extension SceneRenderer {
 
     func distribute(available: Int, sizes: [Int]) -> [Int] {
         guard !sizes.isEmpty else { return [] }
-        if available <= 0 {
+        guard available > 0 else {
             return Array(repeating: 0, count: sizes.count)
         }
+
         var assigned = Array(repeating: 0, count: sizes.count)
         var remaining = available
         for index in sizes.indices {
-            let slotsLeft = sizes.count - index
-            if slotsLeft <= 0 { break }
-            let minimum = max(0, remaining - max(0, slotsLeft - 1) * 1)
-            var proposed = remaining / slotsLeft
-            if proposed == 0 && remaining > 0 {
-                proposed = 1
-            }
-            proposed = min(proposed, sizes[index])
-            proposed = max(minimum, proposed)
-            proposed = min(proposed, remaining)
-            assigned[index] = proposed
-            remaining -= proposed
+            guard remaining > 0 else { break }
+            let requested = max(0, sizes[index])
+            let allocation = min(requested, remaining)
+            assigned[index] = allocation
+            remaining -= allocation
         }
         return assigned
     }
